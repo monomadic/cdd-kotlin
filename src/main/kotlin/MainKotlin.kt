@@ -21,7 +21,7 @@ class  MainKotlin {
         @JvmStatic
         fun main(args: Array<String>) {
             val list = args.toMutableList()
-            if (args.first() == DeleteClass().commandName) {
+            if (args.first() == DeleteClass().commandName || args.first() == DeleteModel().commandName || args.first() == DeleteRequest().commandName) {
                 list.add(1,"--path")
                 list.add(3,"--name")
             } else
@@ -32,8 +32,7 @@ class  MainKotlin {
                 list.add(1,"--path")
                 list.add(3,"--json")
             }
-            println(list)
-            Cdd().subcommands(ListModels(),ListRequests(),InsertModel(),InsertRequest(),DeleteClass(),UpdateRequest(),UpdateModel()).main(list.toTypedArray())
+            Cdd().subcommands(ListModels(),ListRequests(),InsertModel(),InsertRequest(),DeleteClass(), DeleteModel(), DeleteRequest() ,UpdateRequest(),UpdateModel()).main(list.toTypedArray())
         }
 //        {
 //            val text = File("localizationToIOS.sh").readText()

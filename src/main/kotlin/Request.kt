@@ -5,6 +5,8 @@ import kotlinx.serialization.json.*
 class Request(var name: String,
               var vars: MutableList<Variable>,
               var method: String,
-              var urlPath: String)
+              var path: String,
+              var response_type:String,
+              var error_type:String)
 
 

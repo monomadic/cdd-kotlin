@@ -28,12 +28,16 @@ class SourceParser(var file: Node.File) {
                 }
                 val vars = ExtractorVariables().extract(v)
                 if (isRequest) {
-                    val urlPath = vars.find { it.name == "urlPath" }?.value
+                    val urlPath = vars.find { it.name == "url_path" }?.value
                     val method = vars.find { it.name == "method" }?.value
-
-                    if (method != null && urlPath != null) {
-                        vars.removeAll { it.name ==  "urlPath" || it.name == "method"}
-                        requests.add(Request(v.name,vars, method, urlPath))
+                    val response_type = vars.find { it.name == "response_type" }?.value
+                    val error_type = vars.find { it.name == "error_type" }?.value
+                    val reservedVars =  listOf("path","method","response_type","error_type")
+                    if (method != null && urlPath != null && response_type != null && error_type != null) {
+                        vars.removeAll {
+                            reservedVars.contains(it.name)
+                        }
+                        requests.add(Request(v.name,vars, method, urlPath,response_type,error_type))
                     }
 
                 }

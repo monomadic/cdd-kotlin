@@ -15,19 +15,23 @@ import parser.SourceParser
 
 class SourceWriter(var file: Node.File) {
     fun insert(request: Request) {
-        val urlPath = createUrlPath(request.urlPath)
+        val urlPath = createUrlPath(request.path)
         val t = createType(Type.COMPLEX("APIRequest")) //as? TypeRef.Simple
         val type = Node.Decl.Structured.Parent.Type(t as Node.TypeRef.Simple,null)
         val method = createMethod(request.method)
-        insertClass(request.name,request.vars, listOf(urlPath,method), listOf(type))
+        val responseType = createResponseType(request.response_type)
+        val errorType = createErrorType(request.error_type)
+        insertClass(request.name,request.vars, listOf(urlPath,method,responseType,errorType), listOf(type))
     }
 
     fun update(request: Request) {
         updateVarsInClass(request.name,request.vars)
-        val urlPath = createUrlPath(request.urlPath)
+        val urlPath = createUrlPath(request.path)
         val method = createMethod(request.method)
+        val responseType = createResponseType(request.response_type)
+        val errorType = createErrorType(request.error_type)
 
-        val properties = listOf(urlPath, method).mapNotNull {
+        val properties = listOf(urlPath, method,responseType,errorType).mapNotNull {
             it.vars.firstOrNull()
         }
         updatePropertiesInClass(request.name,properties)
@@ -158,7 +162,39 @@ class SourceWriter(var file: Node.File) {
         path.replace("{","\${")
         val str = Node.Expr.StringTmpl.Elem.Regular(path.replace("{","\${"))
         val value = Node.Expr.StringTmpl(listOf(str),false)
-        val property = Node.Decl.Property.Var("urlPath",Node.Type(emptyList(),type))
+        val property = Node.Decl.Property.Var("url_path",Node.Type(emptyList(),type))
+        return Node.Decl.Property(listOf(Node.Modifier.Lit(Node.Modifier.Keyword.OVERRIDE)),
+            false,
+            emptyList(),
+            null,
+            listOf(property),
+            emptyList(),
+            false,
+            value,
+            null)
+    }
+
+    private fun createResponseType(value: String) : Node.Decl.Property {
+        val type = createType(Type.STRING)
+        val str = Node.Expr.StringTmpl.Elem.Regular(value)
+        val value = Node.Expr.StringTmpl(listOf(str),false)
+        val property = Node.Decl.Property.Var("response_type",Node.Type(emptyList(),type))
+        return Node.Decl.Property(listOf(Node.Modifier.Lit(Node.Modifier.Keyword.OVERRIDE)),
+            false,
+            emptyList(),
+            null,
+            listOf(property),
+            emptyList(),
+            false,
+            value,
+            null)
+    }
+
+    private fun createErrorType(value: String) : Node.Decl.Property {
+        val type = createType(Type.STRING)
+        val str = Node.Expr.StringTmpl.Elem.Regular(value)
+        val value = Node.Expr.StringTmpl(listOf(str),false)
+        val property = Node.Decl.Property.Var("error_type",Node.Type(emptyList(),type))
         return Node.Decl.Property(listOf(Node.Modifier.Lit(Node.Modifier.Keyword.OVERRIDE)),
             false,
             emptyList(),

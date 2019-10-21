@@ -90,6 +90,30 @@ class DeleteClass: CliktCommand(name = "delete-class") {
     }
 }
 
+class DeleteModel: CliktCommand(name = "delete-model") {
+    private val path: String by option(help = "Path to Source file").required()
+    private val name: String by option(help = "Class Name").required()
+    override fun run() {
+        val text = File(path).readText()
+        val file = Parser.parseFile(text)
+        val writer = SourceWriter(file)
+        writer.deleteClass(name)
+        writer.write(path)
+    }
+}
+
+class DeleteRequest: CliktCommand(name = "delete-request") {
+    private val path: String by option(help = "Path to Source file").required()
+    private val name: String by option(help = "Class Name").required()
+    override fun run() {
+        val text = File(path).readText()
+        val file = Parser.parseFile(text)
+        val writer = SourceWriter(file)
+        writer.deleteClass(name)
+        writer.write(path)
+    }
+}
+
 class UpdateRequest: CliktCommand(name = "update-request") {
     private val path: String by option(help = "Path to Source file").required()
     private val json: String by option(help = "JSON").required()
