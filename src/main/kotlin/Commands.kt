@@ -22,7 +22,6 @@ class Cdd : NoRunCliktCommand() {
 class ListModels: CliktCommand(name = "list-models") {
     private val path: String by option(help = "Path to Source file").required()
     override fun run() {
-
         val text = File(path).readText()
         val file = Parser.parseFile(text)
         val project = SourceParser(file).generateProject()
